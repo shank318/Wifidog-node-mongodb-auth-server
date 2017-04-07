@@ -1,0 +1,119 @@
+
+
+.navbar {
+    background:#FFF;
+    color: white;
+    padding: 5px 0px 0px 0px;
+}
+
+
+.navbar .navbar-nav > li > a {
+/*    font-weight: bold;*/
+    font-size: 14px;
+    color: black;
+}
+
+@media only screen and (max-width:768px){
+
+    .navbar {
+    background:#FFF;
+    color: white;
+    height: 100px;
+    padding: 5px 0px 0px 0px;
+}
+
+ .navbar-brand {
+    line-height: 50px;
+    height: 50px;
+}
+
+}
+
+
+
+.navbar .navbar-nav > li > a:hover, .nav > li > a:focus {
+    text-decoration: none;
+    /*background-color: #F06292;*/
+}
+
+.collapse.in{
+    background-color:#FFF !important;
+}
+
+.navbar-toggle {
+    margin-top: 10px;
+}
+
+.navbar-collapse {
+  text-align:center;
+}
+.navbar-nav {
+    display:inline-block;
+    float:none;
+}
+
+
+.navbar-brand>img {
+  height: 100%;
+/*  padding: 5px 5px 5px 20px;
+*/  width: auto;
+}
+
+ .navbar-brand {
+    line-height: 110px;
+    height: 110px;
+    padding: 15px;
+}
+
+.navbar-nav li a {
+    line-height: 100px;
+    height: 100px;
+    padding-top: 3px;
+}
+
+
+/**********************************
+Responsive navbar-brand image CSS
+- Remove navbar-brand padding for firefox bug workaround
+- add 100% height and width auto ... similar to how bootstrap img-responsive class works
+***********************************/
+
+
+/* EXAMPLE 9 - Center with Flexbox and Text*/
+.brand-centered {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+.brand-centered .navbar-brand {
+  display: flex;
+  align-items: center;
+}
+.navbar-toggle {
+    z-index: 1;
+}
+
+
+
+
+/* CSS Transform Align Navbar Brand Text ... This could also be achieved with table / table-cells */
+.navbar-alignit .navbar-header {
+      -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  height: 50px;
+}
+.navbar-alignit .navbar-brand {
+    top: 50%;
+    display: block;
+    position: relative;
+    height: auto;
+    transform: translate(0,-50%);
+    margin-right: 15px;
+  margin-left: 15px;
+}
+
+

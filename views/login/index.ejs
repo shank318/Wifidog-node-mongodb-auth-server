@@ -1,0 +1,83 @@
+<!DOCTYPE html>  
+<html lang="en"> 
+ <% include head %> 
+
+<body class="login-body">
+  <div id="wrapper" >
+  <% include ../navbar %>
+  <div id="content-wrapper-body" > 
+
+<div class="product-section">
+  <form id="facebookform" class="form-horizontal" role="form" action="/facebook" method="post"> </form>
+  <div class="form-login reset-section">
+    <div id="reset-error" class="alert alert-danger">
+          <p class="error-user"></p>
+          <span></span>
+    </div>
+  <!-- <img  width="150px" src="/image/leaves.png"/> -->
+  <p class="header-reset">We will send you a link to reset your password.</p>
+  <br>
+  <br>
+  <form class="reset-form">
+    <input id="reset-email" type="text" name="email" placeholder="Enter email address">
+    <button id="btn-reset" type="button" class="btn btn-login"><i class="icon-hand-right"></i>SEND RESET LINK</button>
+    <p class="reset-password reset-signin"><a href="#">Sign in</a></p>
+  </form>
+</div>
+<div class="form-login login-section">
+  <% if(error)  { %>
+<div id="signupalert" class="alert alert-danger">
+          <p class="error-user"><%= error %></p>
+          <span></span>
+</div>
+<% }  %>
+<!--   <img  width="150px" src="/image/leaves.png"/> -->
+  <form class="register-form" action="/signup" method="post">
+    <input id="email" type="text" name="email" placeholder="Email Address">
+    <input id="name" type="text" name="name" placeholder="Name">
+    <input id="password" type="password" name="password" placeholder="Password">
+    <input type="hidden" name="catId" value="<%= catId %>" />
+    <input type="hidden" name="regId" value="<%= regId %>" />
+    <input type="hidden" name="gid" value="<%= gid %>" /> 
+    <button id="btn-signup" type="submit" class="btn btn-login"><i class="icon-hand-right"></i>Signup</button>
+    <p class="message">Already registered? <a href="#">Sign in</a></p>
+    <h5><b>Or</b></h5>
+    <button id="btn-fblogin" type="button" onclick="fb_login()" href="#" class="btn btn-social btn-facebook"><span class="fa fa-facebook"></span> &nbsp Signup with Facebook</button>
+  </form>
+  <form class="login-form" action="/login" method="post">
+    <input id="login-username" type="text" name="email" value="" placeholder="email">
+    <input id="login-password" type="password" name="password" placeholder="password">
+    <input type="hidden" name="catId" value="<%= catId %>" />
+    <input type="hidden" name="regId" value="<%= regId %>" /> 
+    <input type="hidden" name="gid" value="<%= gid %>" /> 
+    <button id="btn-signup" type="submit" class="btn btn-login"><i class="icon-hand-right"></i>Login</button>
+    <div class="row">
+      <div class="col-md-5">
+        <p class="reset-password text-left"><a href="#">Recover password?</a></p>
+      </div>
+      <div class="col-md-7">
+        <p class="message text-right">Not registered? <a href="#">Create an account</a></p>
+      </div>
+    </div>
+    <h5><b>Or</b></h5>
+    <button id="btn-fblogin" type="button" onclick="fb_login()" href="#" class="btn btn-social btn-facebook"><span class="fa fa-facebook"></span> &nbsp Login with Facebook</button>
+  </form>
+    
+</div>
+</div>
+
+</div>
+<% include ../footer %>
+
+<!-- End footer -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>  
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script> 
+<script src="/javascripts/userauth.js"></script> 
+<script src="/javascripts/facebookauth.js"></script>
+
+
+</div> 
+</body> 
+
+</html>  

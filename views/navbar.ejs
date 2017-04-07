@@ -1,0 +1,64 @@
+
+  <nav class="navbar navbar-default navbar-custom navbar-fixed-top margin-btm-0px" id="mainnav"">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar9">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      
+      <div class="brand-centered">
+      <a class="navbar-brand" href="/"><img style="margin-right: 10px; padding: 0;" src="/image/logo.png" alt="Dispute Bills">
+      </a>
+      </div>
+      
+      <div id="navbar9" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-left" id="menu-items">
+          <li><a href="/category/skin-57a9bfe578b39af91c5c37ae">SKIN</a></li>
+          <li><a href="/category/hair-57a9bfe578b39af91c5c37af">HAIR</a></li>
+          <li ><a href="/custom" >PERSONALIZE</a></li>
+           <li ><a href="/shop" >SHOP</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right" id="menu-items">
+        <!-- <span class="badge" style="background: #E40C7C;">new</span> -->
+            <li><a href="/offers">OFFERS</a></li>
+            <li><a href="http://blog.osperi.com" target="_blank">BLOG</a></li>
+            <li><a href="/aboutus" >ABOUT US</a></li>
+            <% if(isAuth) { %>
+             <li class="dropdown">
+                <a href="#" data-toggle="dropdown" lass="dropdown-toggle"><span class="glyphicon glyphicon-user"></span> <b class="caret"></b></a>
+                <ul class="navbar_user_dropdown dropdown-menu">
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/profile">Refer a friend</a></li>
+                    <li><a href="/orders">Orders</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+             </li>   
+            <% } else { %>
+            <li ><a href="/login" >LOGIN</a></li>
+            <% } %>
+            <li>
+            <a href="/cart" >
+                <span class="glyphicon glyphicon-shopping-cart"><span class="badge" id="cart_counter"></span></span>
+            </a>
+            </li>
+            <li>
+                <a id="example" type="button" class="btn  pull-right btn-link btn-blk" data-toggle="popover" data-placement="bottom" data-html="true" data-content="
+                <form action='/search/' class='form-inline' role='search'>
+                  <div class='form-group'>
+                    <input type='search' name='q' id='q' class='form-control' placeholder='Search'>
+                  </div>
+                  <button type='submit' class='btn btn-default btn-go'>Go</button>
+                </form>" data-container="body">
+                <span class="glyphicon glyphicon-search "></span>
+              </a>
+            </li>
+        </ul>
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+    <!--/.container-fluid -->
+  </nav>
