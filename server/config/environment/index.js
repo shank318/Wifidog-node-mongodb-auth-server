@@ -7,7 +7,7 @@ var all = {
 
   env: process.env.NODE_ENV || 'development',
   root: path.normalize(__dirname + '/../../..'),
-  port: process.env.PORT || 9000,
+  port: process.env.PORT || 3001,
 
   mongo: {
     options: {
@@ -27,7 +27,7 @@ var all = {
 
   // Timeouts in milliseconds
 timeouts : {
-  validation : 300000,
+  validation : 20000,
   expiration : 10800000
 },
 

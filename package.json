@@ -7,16 +7,18 @@
   },
   "dependencies": {
     "body-parser": "~1.15.1",
+    "chalk": "^1.0.0",
+    "client-sessions": "^0.7.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
+    "ejs": "^2.5.5",
     "express": "~4.13.4",
-    "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.0",
+    "express-fileupload": "^0.1.2",
+    "moment": "2.10.6",
     "mongodb": "^2.2.10",
     "mongoose": "^4.0.1",
-    "moment": "2.10.6",
-    "chalk": "^1.0.0",
-    "ejs": "^2.5.5",
-    "ripe": "^0.2.0"
+    "morgan": "~1.7.0",
+    "ripe": "^0.2.0",
+    "serve-favicon": "~2.3.0"
   }
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>  
+<html lang="en"> 
+ <% include head %> 
+
+<body class="login-body">
+  <div id="wrapper" >
+  <% include ../navbar %>
+  <div id="content-wrapper-body" > 
+
+<div class="product-section">
+  <div class="form-login reset-section">
+    <div id="reset-error" class="alert alert-danger">
+          <p class="error-user"></p>
+          <span></span>
+    </div>
+  <!-- <img  width="150px" src="/image/leaves.png"/> -->
+  <p class="header-reset">We will send you a link to reset your password.</p>
+  <br>
+  <br>
+  <form class="reset-form">
+    <input id="reset-email" type="text" name="email" placeholder="Enter email address">
+    <button id="btn-reset" type="button" class="btn btn-login"><i class="icon-hand-right"></i>SEND RESET LINK</button>
+    <p class="reset-password reset-signin"><a href="#">Sign in</a></p>
+  </form>
+</div>
+<div class="form-login login-section">
+
+<!--   <img  width="150px" src="/image/leaves.png"/> -->
+  <form class="login-form" action="/user/info" method="post">
+    <input id="age" type="text" name="age" value="" placeholder="Age">
+     <input id="gender" type="text" name="gender" placeholder="Gender">
+    <input type="hidden" name="redirect_url" value="<%= redirect_url %>" />
+    <input type="hidden" name="email" value="<%= email %>" />
+    <input type="hidden" name="ip" value="<%= ip %>" /> 
+    <input type="hidden" name="gwid" value="<%= gwid %>" /> 
+    <button id="btn-signup" type="submit" class="btn btn-login"><i class="icon-hand-right"></i>Access internet</button>
+  </form>
+    
+</div>
+</div>
+
+</div>
+<% include ../footer %>
+
+<!-- End footer -->
+
+<script src="/javascripts/jquery.js"></script>  
+<script src="/javascripts/bootstrap.min.js"></script> 
+<script src="/javascripts/userauth.js"></script> 
+
+
+
+</div> 
+</body> 
+
+</html>  

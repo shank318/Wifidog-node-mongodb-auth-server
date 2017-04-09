@@ -25,8 +25,8 @@ gateways.getPong = function( req, res ) {
     return Errors.errorMissingParam(res, 'gw_id');
     }
     var gateway = {
-      gwid: (req.query.gw_id).replace( '::ffff:', '' );,
-      gwIP: ip,
+      gwid: (req.query.gw_id),
+      gwIP: ip.replace( '::ffff:', '' ),
       sysUpTime: req.query.sys_uptime,
       sysMemFree: req.query.sys_memfree,
       sysLoad: req.query.sys_load,

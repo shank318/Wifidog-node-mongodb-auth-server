@@ -27,19 +27,6 @@
             <li><a href="/offers">OFFERS</a></li>
             <li><a href="http://blog.osperi.com" target="_blank">BLOG</a></li>
             <li><a href="/aboutus" >ABOUT US</a></li>
-            <% if(isAuth) { %>
-             <li class="dropdown">
-                <a href="#" data-toggle="dropdown" lass="dropdown-toggle"><span class="glyphicon glyphicon-user"></span> <b class="caret"></b></a>
-                <ul class="navbar_user_dropdown dropdown-menu">
-                    <li><a href="/profile">Profile</a></li>
-                    <li><a href="/profile">Refer a friend</a></li>
-                    <li><a href="/orders">Orders</a></li>
-                    <li><a href="/logout">Logout</a></li>
-                </ul>
-             </li>   
-            <% } else { %>
-            <li ><a href="/login" >LOGIN</a></li>
-            <% } %>
             <li>
             <a href="/cart" >
                 <span class="glyphicon glyphicon-shopping-cart"><span class="badge" id="cart_counter"></span></span>
