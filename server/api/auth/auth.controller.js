@@ -35,51 +35,78 @@ wifidogauth.getAuth = function( req, res ) {
               });
             }else{
             auth = client.auth;
-            var isInfoCompleted = false;
             if(client.user && client.user.info.age) {
               console.log("User info is completed");
               auth = config.AUTH_TYPES.AUTH_ALLOWED;
-              isInfoCompleted = true;
             }else{
               console.log("User info not completed");
             }
-            var clientData={};
-            clientData.mac = req.query.mac;
-            switch ( auth ) {
-              case config.AUTH_TYPES.AUTH_VALIDATION:
-                // Did we timeout?
-                console.log('IP: ' + req.query.ip +"checking if client is validated..");
-                if ( (isInfoCompleted == false) && (nowInSeconds > client.lastPingTime + config.timeouts.validation) ) {
-                  clientData.auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED;
+
+             //Update user Auth
+            //  if(client.user.auth == config.AUTH_TYPES.AUTH_VALIDATION_FAILED) {
+            //     User.update({_id: client.user._id}, { $set: { auth: auth, lastPingTime: Math.floor( now.format( 'x' )) } }, function( err, user){
+            //             console.log("Updated auth");
+            //     });
+            // }
+            // var clientData={};
+            // clientData.mac = req.query.mac;
+            if(auth == config.AUTH_TYPES.AUTH_VALIDATION) {
+              console.log('IP: ' + req.query.ip +"checking if client is validated..");
+                if ( nowInSeconds > client.lastPingTime + config.timeouts.validation) {
                   auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED
                   console.log('IP: ' + req.query.ip +"client validation failed")
                 }
-                break;
-              case config.AUTH_TYPES.AUTH_ALLOWED:
-                // Did we timeout? We expect user to validate again.
-                console.log('IP: ' + req.query.ip +"client allowed");
-                if ( nowInSeconds > client.lastPingTime + config.timeouts.expiration ) {
-                  // Set the last logout time
-                     clientData.lastLogOutTime = client.lastPingTime;
-                     clientData.lastPingTime = Math.floor( now.format( 'x' )) ;
-                     clientData.auth = config.AUTH_TYPES.AUTH_VALIDATION
-                     auth = config.AUTH_TYPES.AUTH_VALIDATION
-                } else {
-                  // Update the server information
-                      clientData.stage = req.query.stage;
-                      clientData.incoming = req.query.incoming;
-                      clientData.outgoing = req.query.outgoing;
-                      clientData.lastPingTime = nowInSeconds;
-                }
-                  
-                break;
-              }
-              Client.update({ "_id": client._id}, { $set: clientData }, function(err, updated){
-                console.log("Client updated");
-                console.log( 'IP: ' + req.query.ip + ', Auth: ' + auth );
-                res.send( 'Auth: ' + auth );
+            }
+            // switch ( auth ) {
+            //   case config.AUTH_TYPES.AUTH_VALIDATION:
+            //     // Did we timeout?
+            //     console.log('IP: ' + req.query.ip +"checking if client is validated..");
+            //     if ( (isInfoCompleted == false) && (nowInSeconds > client.lastPingTime + config.timeouts.validation) ) {
+            //       clientData.auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED;
+            //       auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED
+            //       console.log('IP: ' + req.query.ip +"client validation failed")
+            //     }
+            //     break;
+            //   case config.AUTH_TYPES.AUTH_ALLOWED:
+            //   console.log('IP: ' + req.query.ip +"client allowed");
+            //     // Did we timeout? We expect user to validate again.
+            //     if ( nowInSeconds > client.lastPingTime + config.timeouts.expiration ) {
+            //       // Set the last logout time
+            //          clientData.lastLogOutTime = client.lastPingTime;
+            //          clientData.lastPingTime = Math.floor( now.format( 'x' )) ;
+            //          clientData.auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED;
+            //          auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED;
+            //          console.log('IP: ' + req.query.ip +"client expired")
+
+            //          // User.update({_id: client.user._id}, { $set: { lastPingTime: clientData.lastPingTime, auth: auth } }, function( err, user){
+            //          //    console.log("Updated last ping time of user");
+            //          // });
+            //          //Send SMS
+            //     } else {
+            //       // Update the server information
+            //           clientData.stage = req.query.stage;
+            //           clientData.incoming = req.query.incoming;
+            //           clientData.outgoing = req.query.outgoing;
+            //           //clientData.lastPingTime = nowInSeconds;
+            //     }
+            //     break;
+            //   }
+            console.log("Incoming "+req.query.incoming)
+            console.log("outgoing "+req.query.incoming)
+            if(!client.mac) {
+              Client.update({ "_id": client._id}, { $set: { mac: req.query.mac } }, function(err, updated){
+                console.log("Mac updated in client");
               });
             }
+            if(!client.user.mac){
+              User.update({_id: client.user._id}, { $set: { mac: req.query.mac } }, function( err, user){
+                    console.log("Assigned mac to user");
+              });
+            }
+          }
+             
+            console.log( 'IP: ' + req.query.ip + ', Auth: ' + auth );
+            res.send( 'Auth: ' + auth );
           });
   }
 

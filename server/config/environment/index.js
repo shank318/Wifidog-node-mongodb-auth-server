@@ -28,7 +28,7 @@ var all = {
   // Timeouts in milliseconds
 timeouts : {
   validation : 20000,
-  expiration : 10800000
+  expiration : 86400000
 },
 
   secrets: {
