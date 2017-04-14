@@ -6,7 +6,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 
 // auth purpose
-var session = require('express-session');
+// var session = require('express-session');
 var mongoose = require('mongoose');
 
 var config = require('./environment');
