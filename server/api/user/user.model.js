@@ -5,16 +5,16 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
     token: String,
-    gwid: String,
     mac: String,
-    lastPingTime: Number,
-    auth: Number,
+    lastLoginTime: Number,
+    auth: { type: Number, default: 1 },
     email: { type: String, lowercase: true },
     name: String,
     info: {
       age: String,
       gender: String
     },
+    current_session: { type: mongoose.Schema.Types.ObjectId, ref: 'UserSessions'},
     stage: String,
     lastLogOutTime: Number,
     created_at: {type: Date , default: Date.now },

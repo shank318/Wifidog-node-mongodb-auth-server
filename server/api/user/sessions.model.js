@@ -5,10 +5,9 @@ var Schema = mongoose.Schema;
 
 var SessionsSchema = new Schema({
     started_at: {type: Date },
-    incoming: Number,
-    ougoing: Number,
-    user : { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    ends_at: {type: Date }
+    incoming: { type: Number, default: 0},
+    outgoing: { type: Number, default: 0},
+    mac : String
 });
 
 module.exports = mongoose.model('UserSessions', SessionsSchema);

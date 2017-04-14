@@ -2,6 +2,7 @@
 var Errors = require('../../error');
 var Success = require('../../responses');
 var User = require('../user/user.model');
+var UserSession = require('../user/sessions.model');
 var Client = require('../user/clients.model');
 var crypt = require('crypto');
 var config = require('../../config/environment');
@@ -22,145 +23,117 @@ loginrequest.getLogin =  function( req, res ) {
     var token = '';
     ip = ip.replace( '::ffff:', '' );
 
-    Client.findOne( { client_ip: ip, gwid: req.query.gw_id })
-          .populate('user')
-          .exec(function(err, client) {
+    User.findOne( { mac: req.query.mac })
+          .exec(function(err, user) {
              if(err) res.render('error')
-            if(client){
-                if ( nowInSeconds > client.lastPingTime + config.timeouts.expiration ) {
+            if(user){
+                if ( nowInSeconds > user.lastLoginTime + config.timeouts.expiration ) {
                   console.log("User expired..asking to login again");
-                  renderLoginPage(res, req.query.gw_address,req.query.gw_port, ip, req.query.gw_id );
-                  return;
-                }
-                if(client.user){
-                    if(client.user.info.age) {
-                        ///Everything is ok, give access to internet.
-                        console.log("Send token to gateway");
-                        Client.update( {_id: client._id}, { $set: { lastPingTime: Math.floor( now.format( 'x' ) ) } }, function(err, update){
-                            res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+client.user.token);
-                        });
-                    }else{
-                        console.log("User exists with incomplete into..show info page")
-                        renderUserInfoPage(res, req.query.gw_address,req.query.gw_port, ip, req.query.gw_id, client.user.email );
-                    }
-                    ///Everything is ok, give access to internet.
-                    // var nowInSeconds = Math.floor( now.format( 'x' ) );
-                    // if(client.auth == config.AUTH_TYPES.AUTH_VALIDATION_FAILED && (nowInSeconds < client.lastPingTime + config.timeouts.period)){
-                    //   console.log("Show expiry page");
-                    // }else{
-                    //   console.log("Sending token to gateway");
-                    //   Client.update( {_id: client._id}, { $set: { lastPingTime: Math.floor( now.format( 'x' ) ) } }, function(err, update){
-                    //       res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+client.user.token);
-                    //   });
-                    // }
+                  renderLoginPage(res, req.query.gw_address,req.query.gw_port, req.query.mac );
                 }else{
-                  console.log("No user is bind to this client..show login page")
-                  renderLoginPage(res, req.query.gw_address,req.query.gw_port, ip, req.query.gw_id );
-                }
+                    ///Everything is ok, give access to internet.
+                    console.log("Send token to gateway");
+                    UserSession.create({ started_at: Date.now(), mac: req.query.mac}, function(err, session){
+                      User.update( {_id: user._id}, { $set: { current_session:session._id, lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, update){
+                          res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
+                      });
+                    });
+               }
             }else{
-              console.log("Client does not exists..show login page")
-              renderLoginPage(res, req.query.gw_address,req.query.gw_port, ip, req.query.gw_id );
+              console.log("User does not exists..show login page")
+              renderLoginPage(res, req.query.gw_address,req.query.gw_port, req.query.mac );
             }
           });
     //res.redirect( 'http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token=' + token );
   }
 
- function renderLoginPage(res, gw_address, gw_port, ip, gwid ) {
+ function renderLoginPage(res, gw_address, gw_port, mac ) {
     var data = {
     redirect_url:  'http://' + gw_address + ':' + gw_port + '/wifidog/auth?token=',
-    ip: ip.replace( '::ffff:', '' ),
-    gwid: gwid
+    mac: mac
     }
     res.render('login', data);
  }
 
- function renderUserInfoPage(res, gw_address, gw_port, ip, gwid , email) {
+ function renderUserInfoPage(res, gw_address, gw_port, gwid , mac) {
     var data = {
     redirect_url:  'http://' + gw_address + ':' + gw_port + '/wifidog/auth?token=',
     ip: ip.replace( '::ffff:', '' ),
     gwid: gwid,
-    email: email
+    mac: mac
     }
     res.render('userinfo', data);
  }
 
   loginrequest.saveUser = function( req, res ) {
      if( !req.body.email ) {
-        return Errors.errorMissingParam(res, 'state');
+        return Errors.errorMissingParam(res, 'email');
+    }
+    if( !req.body.mac ) {
+        return Errors.errorMissingParam(res, 'mac');
     }
     var token = crypt.randomBytes( 64 ).toString('hex');
-    // var client_cookie = req.session.client_cookie;
-    // if(!client_cookie) client_cookie = crypt.randomBytes( 10 ).toString('hex');
+
     var moment = require( 'moment' );
     var now = moment();
     var email = req.body.email.toString();
-    User.findOneAndUpdate(  { "email": email.toLowerCase() },
-                            { $set: { "email": email.toLowerCase(), 
-                                      "name": req.body.name,
-                                      "phone": req.body.phone,
-                                      "token":token 
-                                    } 
-                            },
-                            { upsert: true, new: true},
-                            function( err, user){
-                                if(err) return Errors.errorServer( res, err );
-                                // if(user.auth == config.AUTH_TYPES.AUTH_VALIDATION_FAILED && (nowInSeconds < user.lastPingTime + config.timeouts.period)){
-                                //   console.log("Show expiry page");
-                                //   return;
-                                // }
-                                Client.update({ client_ip: req.body.ip, gwid: req.body.gwid },
-                                               { $set: { 
-                                                         client_ip: req.body.ip,
-                                                         gwid: req.body.gwid,
-                                                         user: user._id,
-                                                         auth: config.AUTH_TYPES.AUTH_VALIDATION,
-                                                         lastPingTime: Math.floor( now.format( 'x' ) ) 
-                                                        }
-                                               },
-                                               { upsert: true},
-                                               function( err, client){
-                                                 if(err) return Errors.errorServer( res, err );
-                                                 console.log("Redirecting "+req.body.redirect_url+user.token);
-                                                 // req.session.client_cookie = client_cookie;
-                                                 res.redirect(req.body.redirect_url+token);
-                                               });
-                            });
+    UserSession.create({ started_at: Date.now(), mac: req.body.mac}, function(err, session){
+      if(err) return Errors.errorServer( res, err );
+      User.update( { "mac": req.body.mac }, { $set: { current_session:session._id, lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, nUpdated, rawResponse){
+        if(err) return Errors.errorServer( res, err );
+        if(nUpdated && !nUpdated.nModified) {
+          User.create({   "email": email.toLowerCase(), 
+                          "name": req.body.name,
+                          "phone": req.body.phone,
+                          "token":token,
+                          "current_session":session._id,
+                          "mac": req.body.mac,
+                          "lastLoginTime": Math.floor( now.format( 'x' ) )
+                        }, function( err, created){
+                            if(err) return Errors.errorServer( res, err );
+                            res.redirect(req.body.redirect_url+token);
+                        });
+        }else{
+          res.redirect(req.body.redirect_url+token);
+        }
+      });
+    });
   }
 
-  loginrequest.saveInfo = function( req, res ) {
-    if( !req.body.email ) {
-        return Errors.errorMissingParam(res, 'state');
-    }
-    var moment = require( 'moment' );
-    var now = moment();
-    var email = req.body.email.toString();
-    User.findOneAndUpdate(  { "email": email.toLowerCase() },
-                            { $set: { 
-                                      info: { "age": req.body.age,
-                                              "gender": req.body.gender
-                                            }
-                                    } 
-                            },
-                            { new: true },
-                            function( err, user){
-                                if(err) return Errors.errorServer( res, err );
-                                Client.findOneAndUpdate({ client_ip: req.body.ip, gwid: req.body.gwid },
-                                               { $set: { 
-                                                         client_ip: req.body.ip,
-                                                         gwid: req.body.gwid,
-                                                         auth: config.AUTH_TYPES.AUTH_ALLOWED,
-                                                         lastPingTime: Math.floor( now.format( 'x' ) ) 
-                                                        }
-                                               },
-                                               { new: true},
-                                               function( err, client){
-                                                 if(err) return Errors.errorServer( res, err );
-                                                 console.log("Redirecting "+req.body.redirect_url+user.token);
-                                                 // req.session.client_cookie = client.client_cookie;
-                                                 res.redirect(req.body.redirect_url+user.token);
-                                               });
-                            });
-  }
+  // loginrequest.saveInfo = function( req, res ) {
+  //   if( !req.body.mac ) {
+  //       return Errors.errorMissingParam(res, 'mac');
+  //   }
+  //   var moment = require( 'moment' );
+  //   var now = moment();
+  //   var email = req.body.email.toString();
+  //   User.findOneAndUpdate(  { "mac": email.toLowerCase() },
+  //                           { $set: { 
+  //                                     info: { "age": req.body.age,
+  //                                             "gender": req.body.gender
+  //                                           }
+  //                                   } 
+  //                           },
+  //                           { new: true },
+  //                           function( err, user){
+  //                               if(err) return Errors.errorServer( res, err );
+  //                               Client.findOneAndUpdate({ client_ip: req.body.ip, gwid: req.body.gwid },
+  //                                              { $set: { 
+  //                                                        client_ip: req.body.ip,
+  //                                                        gwid: req.body.gwid,
+  //                                                        auth: config.AUTH_TYPES.AUTH_ALLOWED,
+  //                                                        lastPingTime: Math.floor( now.format( 'x' ) ) 
+  //                                                       }
+  //                                              },
+  //                                              { new: true},
+  //                                              function( err, client){
+  //                                                if(err) return Errors.errorServer( res, err );
+  //                                                console.log("Redirecting "+req.body.redirect_url+user.token);
+  //                                                // req.session.client_cookie = client.client_cookie;
+  //                                                res.redirect(req.body.redirect_url+user.token);
+  //                                              });
+  //                           });
+  // }
 
 
 /**
