@@ -6,7 +6,6 @@ var UserSession = require('../user/sessions.model');
 var Client = require('../user/clients.model');
 var crypt = require('crypto');
 var config = require('../../config/environment');
-var MobileDetect = require('mobile-detect');
 var loginrequest = {};
 
 /**
