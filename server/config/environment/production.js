@@ -3,6 +3,6 @@
 module.exports = {
   ip: process.env.IP || undefined,
   mongo: {
-    uri: 'mongodb://shank:beautyandbeast@localhost/wifidog'
+    uri: 'mongodb://wifidog:beautyandbeast@localhost/wifidog'
   }
 };
