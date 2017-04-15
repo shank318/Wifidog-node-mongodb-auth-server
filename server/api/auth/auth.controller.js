@@ -29,20 +29,36 @@ wifidogauth.getAuth = function( req, res ) {
               auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED
             }else{
             auth = user.auth;
-
             if ( nowInSeconds > user.lastLoginTime + config.timeouts.expiration) {
                   auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED
                   console.log('IP: ' + req.query.ip +"client validation failed")
                   //Send SMS
             }
-
             console.log("Incoming "+req.query.incoming)
             console.log("outgoing "+req.query.outgoing)
-            UserSession.update({_id: user.current_session}, { $set: { incoming: req.query.incoming, outgoing: req.query.outgoing }}, function(err, updated){
-              console.log('IP: ' + req.query.ip+" Session updated ");
-            });
+            if(req.query.incoming <= 0 && req.query.outgoing <= 0){
+              UserSession.create({ started_at: Date.now(), mac: req.query.mac}, function(err, session){
+                  User.update( {_id: user._id}, { $set: { current_session:session._id } }, function(err, update){
+                    console.log('IP: ' + req.query.ip+" New Session created ");
+                    sendAuth(req, auth, res);
+                });
+              });
+            }else if(user.current_session){
+              UserSession.update({_id: user.current_session}, { $set: { incoming: req.query.incoming, outgoing: req.query.outgoing }}, function(err, updated){
+                console.log('IP: ' + req.query.ip+" Session updated ");
+                sendAuth(req, auth, res);
+              });
+            }else{
+              console.log("No session attached!");
+              sendAuth(req, auth, res);
+            }
            }
-            var start = new Date();
+          });
+  }
+
+
+  function sendAuth(req, auth, res){
+    var start = new Date();
             start.setHours(0,0,0,0);
 
             var end = new Date();
@@ -57,8 +73,7 @@ wifidogauth.getAuth = function( req, res ) {
               console.log("Total data used today "+totalBytesUsed);
               console.log( 'IP: ' + req.query.ip + ', Auth: ' + auth );
               res.send( 'Auth: ' + auth );
-            })
-          });
+            });
   }
 
 

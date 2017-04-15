@@ -2,7 +2,6 @@
 var Errors = require('../../error');
 var Success = require('../../responses');
 var User = require('../user/user.model');
-var UserSession = require('../user/sessions.model');
 var Client = require('../user/clients.model');
 var crypt = require('crypto');
 var config = require('../../config/environment');
@@ -33,10 +32,8 @@ loginrequest.getLogin =  function( req, res ) {
                 }else{
                     ///Everything is ok, give access to internet.
                     console.log("Send token to gateway");
-                    UserSession.create({ started_at: Date.now(), mac: req.query.mac}, function(err, session){
-                      User.update( {_id: user._id}, { $set: { current_session:session._id, lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, update){
+                    User.update( {_id: user._id}, { $set: { lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, update){
                           res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
-                      });
                     });
                }
             }else{
@@ -77,27 +74,23 @@ loginrequest.getLogin =  function( req, res ) {
     var moment = require( 'moment' );
     var now = moment();
     var email = req.body.email.toString();
-    UserSession.create({ started_at: Date.now(), mac: req.body.mac}, function(err, session){
+    User.update( { "mac": req.body.mac }, { $set: { "updated_at": Date.now(), lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, nUpdated, rawResponse){
       if(err) return Errors.errorServer( res, err );
-      User.update( { "mac": req.body.mac }, { $set: { current_session:session._id, lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, nUpdated, rawResponse){
-        if(err) return Errors.errorServer( res, err );
-        if(nUpdated && !nUpdated.nModified) {
-          User.create({   "email": email.toLowerCase(), 
-                          "name": req.body.name,
-                          "phone": req.body.phone,
-                          "token":token,
-                          "device_type": req.device ? req.device.type: "unknown",
-                          "current_session":session._id,
-                          "mac": req.body.mac,
-                          "lastLoginTime": Math.floor( now.format( 'x' ) )
-                        }, function( err, created){
-                            if(err) return Errors.errorServer( res, err );
-                            res.redirect(req.body.redirect_url+token);
-                        });
-        }else{
-          res.redirect(req.body.redirect_url+token);
-        }
-      });
+      if(nUpdated && !nUpdated.nModified) {
+        User.create({   "email": email.toLowerCase(), 
+                        "name": req.body.name,
+                        "phone": req.body.phone,
+                        "token":token,
+                        "device_type": req.device ? req.device.type: "unknown",
+                        "mac": req.body.mac,
+                        "lastLoginTime": Math.floor( now.format( 'x' ) )
+                      }, function( err, created){
+                          if(err) return Errors.errorServer( res, err );
+                          res.redirect(req.body.redirect_url+token);
+                      });
+      }else{
+        res.redirect(req.body.redirect_url+token);
+      }
     });
   }
 
