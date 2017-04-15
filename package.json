@@ -14,6 +14,7 @@
     "dgram": "^1.0.1",
     "ejs": "^2.5.5",
     "express": "~4.13.4",
+    "express-device": "^0.4.2",
     "express-fileupload": "^0.1.2",
     "fs": "0.0.1-security",
     "moment": "2.10.6",
