@@ -1,6 +1,7 @@
 'use strict';
 var sessions = require('client-sessions');
 const fileUpload = require('express-fileupload');
+var device = require('express-device');
 var conf = {
   db: {
     db: 'wifidog',
@@ -22,6 +23,7 @@ module.exports = function (app) {
     // store: new MongoStore(conf.db)
   }));
   app.use(fileUpload());
+  app.use(device.capture());
   // API routes
   app.use('/', require('./api/gateways'));
   app.use('/', require('./api/auth'));

@@ -6,6 +6,7 @@ var UserSession = require('../user/sessions.model');
 var Client = require('../user/clients.model');
 var crypt = require('crypto');
 var config = require('../../config/environment');
+var MobileDetect = require('mobile-detect');
 var loginrequest = {};
 
 /**
@@ -65,7 +66,7 @@ loginrequest.getLogin =  function( req, res ) {
     res.render('userinfo', data);
  }
 
-  loginrequest.saveUser = function( req, res ) {
+  loginrequest.saveUser = function( req, res ) { 
      if( !req.body.email ) {
         return Errors.errorMissingParam(res, 'email');
     }
@@ -73,7 +74,7 @@ loginrequest.getLogin =  function( req, res ) {
         return Errors.errorMissingParam(res, 'mac');
     }
     var token = crypt.randomBytes( 64 ).toString('hex');
-
+    
     var moment = require( 'moment' );
     var now = moment();
     var email = req.body.email.toString();
@@ -86,6 +87,7 @@ loginrequest.getLogin =  function( req, res ) {
                           "name": req.body.name,
                           "phone": req.body.phone,
                           "token":token,
+                          "device_type": req.device ? req.device.type: "unknown",
                           "current_session":session._id,
                           "mac": req.body.mac,
                           "lastLoginTime": Math.floor( now.format( 'x' ) )

@@ -6,6 +6,7 @@ var Schema = mongoose.Schema;
 var UserSchema = new Schema({
     token: String,
     mac: String,
+    device_type: String,
     lastLoginTime: Number,
     auth: { type: Number, default: 1 },
     email: { type: String, lowercase: true },
