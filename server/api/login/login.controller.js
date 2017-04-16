@@ -32,9 +32,10 @@ loginrequest.getLogin =  function( req, res ) {
                 }else{
                     ///Everything is ok, give access to internet.
                     console.log("Send token to gateway");
-                    User.update( {_id: user._id}, { $set: { lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, update){
-                          res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
-                    });
+                    // User.update( {_id: user._id}, { $set: { lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, update){
+                    //       res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
+                    // });
+                  res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
                }
             }else{
               console.log("User does not exists..show login page")
