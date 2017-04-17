@@ -4,7 +4,7 @@ module.exports= {
   sendSMSDataConsumed: function (phone, name){
     var http = require('http');
     var urlencode = require('urlencode');
-    var message = "Hi "+name+", Your limit of 100MB of daily data usage has been exhausted, please login back after ";
+    var message = "Hi "+name+", Your limit of 100MB daily data usage has been exhausted.";
     var msg=urlencode(message);
     var number= phone;
     var apiKey='nUxPqf/fkfM-TJJAGdXOpC4XfV1vAENq3UrTTfzmyj';
