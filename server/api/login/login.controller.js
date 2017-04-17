@@ -27,7 +27,7 @@ loginrequest.getLogin =  function( req, res ) {
           .exec(function(err, user) {
              if(err) res.render('error')
             if(user){
-               SERVICES.checkIfDataLimitReached(req.query.mac, function(isReached){
+               SERVICES.checkIfDailyDataLimitReached(req.query.mac, function(isReached){
                 if(isReached){
                   console.log("Limit reached");
                   res.render('splash', { "text": "Hi "+user.name+", Your limit of 100MB daily data usage has been exhausted.", isReached: isReached} );

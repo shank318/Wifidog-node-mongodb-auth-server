@@ -60,9 +60,9 @@ wifidogauth.getAuth = function( req, res ) {
 
 
   function sendAuth(req, auth, res){
-      SERVICES.checkIfDataLimitReached(req.query.mac, function(isReached){
+      SERVICES.checkIfDailyDataLimitReached(req.query.mac, function(isReached){
         if(isReached){
-          console.log("100 MB data limit reached");
+          console.log("100 MB daily data limit reached");
           auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED;
           console.log('IP: ' + req.query.ip +"client validation failed");
           SERVICES.sendSMSDataConsumed(user.phone,user.name);

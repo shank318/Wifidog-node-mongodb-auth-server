@@ -28,7 +28,7 @@ module.exports= {
     }).end();
   },
 
-  checkIfDataLimitReached: function(mac, callback){
+  checkIfDailyDataLimitReached: function(mac, callback){
     var start = new Date();
     start.setHours(0,0,0,0);
     var end = new Date();
