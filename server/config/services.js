@@ -34,7 +34,11 @@ module.exports= {
     var end = new Date();
     end.setHours(23,59,59,999);
     UserSession.find({ mac: mac,  started_at: {$gte: start, $lt: end}}, function( err, sessions){
-      if(err) console.log("Unable to load sessions");
+      if(err) {
+        console.log("Unable to load sessions");
+        //Playing safe
+        callback(false);
+      }
       console.log("Total totay sessions "+sessions.length);
       var totalBytesUsed=0;
       sessions.forEach(function(session){
