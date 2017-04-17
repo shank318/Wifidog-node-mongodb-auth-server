@@ -11,9 +11,10 @@
 
   <img  width="150px" src="/image/logo.png"/>
   <p class="quizsubtitle">Welcome to Osperi</p>
-  <form class="login-form" action="/login" method="post">
-    <input id="email" type="text" name="email" value="" placeholder="Enter email to verify">
-     <input id="name" type="text" name="name" placeholder="Name">
+  <form id="login_form" class="login-form" action="/login" method="post" onsubmit="return validateForm()">
+    <input id="name" type="text" name="name" placeholder="Name*">
+    <input id="email" type="text" name="email" value="" placeholder="Email*">
+    <input onkeypress="return isNumberKey(event)" maxlength="10" type="text" placeholder="Mobile*"  name="phone" >
      <input type="hidden" name="mac" value="<%= mac %>" /> 
     <input type="hidden" name="redirect_url" value="<%= redirect_url %>" /> 
     <button id="btn-signup" type="submit" class="btn btn-login"><i class="icon-hand-right"></i>Access internet</button>

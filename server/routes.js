@@ -59,6 +59,10 @@ app.get('/portal', function( req, res ){
     res.redirect("http://www.google.com");
 });
 
+app.get('/splash', function( req, res ){
+    res.render('splash', "www.osperi.com");
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   res.status(404);

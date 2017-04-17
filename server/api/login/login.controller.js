@@ -26,17 +26,16 @@ loginrequest.getLogin =  function( req, res ) {
           .exec(function(err, user) {
              if(err) res.render('error')
             if(user){
-                if ( nowInSeconds > user.lastLoginTime + config.timeouts.expiration ) {
-                  console.log("User expired..asking to login again");
-                  renderLoginPage(res, req.query.gw_address,req.query.gw_port, req.query.mac );
-                }else{
-                    ///Everything is ok, give access to internet.
-                    console.log("Send token to gateway");
-                    // User.update( {_id: user._id}, { $set: { lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, update){
-                    //       res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
-                    // });
-                  res.redirect('http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
-               }
+               //  if ( nowInSeconds > user.lastLoginTime + config.timeouts.expiration ) {
+               //    console.log("User expired..asking to login again");
+               //    renderLoginPage(res, req.query.gw_address,req.query.gw_port, req.query.mac );
+               //  }else{
+               //      ///Everything is ok, give access to internet.
+               //      console.log("Send token to gateway");
+               //      res.render('splash', 'http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
+               // }
+               console.log("Show splash and send token to gateway");
+               res.render('splash', 'http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
             }else{
               console.log("User does not exists..show login page")
               renderLoginPage(res, req.query.gw_address,req.query.gw_port, req.query.mac );

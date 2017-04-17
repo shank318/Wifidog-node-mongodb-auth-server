@@ -6,6 +6,7 @@ var Success = require('../../responses');
 var config = require('../../config/environment');
 var Client = require('../user/clients.model');
 var UserSession = require('../user/sessions.model');
+var SMS = require('../../config/services');
 var wifidogauth = {};
 
 
@@ -29,11 +30,12 @@ wifidogauth.getAuth = function( req, res ) {
               auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED
             }else{
             auth = user.auth;
-            if ( nowInSeconds > user.lastLoginTime + config.timeouts.expiration) {
-                  auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED
-                  console.log('IP: ' + req.query.ip +"client validation failed")
-                  //Send SMS
-            }
+            // if ( nowInSeconds > user.lastLoginTime + config.timeouts.expiration) {
+            //       auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED
+            //       console.log('IP: ' + req.query.ip +"client validation failed")
+            //       //Send SMS
+            //       SMS.sendSMSDataConsumed(user.phone,user.name);
+            // }
             console.log("Incoming "+req.query.incoming)
             console.log("outgoing "+req.query.outgoing)
             if(req.query.incoming <= 0 && req.query.outgoing <= 0){
@@ -71,6 +73,12 @@ wifidogauth.getAuth = function( req, res ) {
                 totalBytesUsed= totalBytesUsed+ session.incoming + session.outgoing; 
               });
               console.log("Total data used today "+totalBytesUsed);
+              if(totalBytesUsed>= 100000000){
+                console.log("100 MB data limit reached");
+                auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED;
+                console.log('IP: ' + req.query.ip +"client validation failed");
+                SMS.sendSMSDataConsumed(user.phone,user.name);
+              }
               console.log( 'IP: ' + req.query.ip + ', Auth: ' + auth );
               res.send( 'Auth: ' + auth );
             });

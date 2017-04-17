@@ -9,6 +9,7 @@ var UserSchema = new Schema({
     device_type: String,
     lastLoginTime: Number,
     auth: { type: Number, default: 1 },
+    phone: Number,
     email: { type: String, lowercase: true },
     name: String,
     info: {
