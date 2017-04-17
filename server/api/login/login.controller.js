@@ -6,7 +6,8 @@ var Client = require('../user/clients.model');
 var crypt = require('crypto');
 var config = require('../../config/environment');
 var loginrequest = {};
-
+var SERVICES = require('../../config/services');
+var moment = require( 'moment' );
 /**
    * Receive request to login
    */
@@ -26,16 +27,16 @@ loginrequest.getLogin =  function( req, res ) {
           .exec(function(err, user) {
              if(err) res.render('error')
             if(user){
-               //  if ( nowInSeconds > user.lastLoginTime + config.timeouts.expiration ) {
-               //    console.log("User expired..asking to login again");
-               //    renderLoginPage(res, req.query.gw_address,req.query.gw_port, req.query.mac );
-               //  }else{
-               //      ///Everything is ok, give access to internet.
-               //      console.log("Send token to gateway");
-               //      res.render('splash', 'http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
-               // }
-               console.log("Show splash and send token to gateway");
-               res.render('splash', 'http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token);
+               SERVICES.checkIfDataLimitReached(req.query.mac, function(isReached){
+                if(isReached){
+                  console.log("Limit reached");
+                  res.render('splash', { "text": "Hi "+user.name+", Your limit of 100MB daily data usage has been exhausted.", isReached: isReached} );
+                }else{
+                  console.log("Show splash and send token to gateway");
+                  var url = 'http://' + req.query.gw_address + ':' + req.query.gw_port + '/wifidog/auth?token='+user.token;
+                  res.render('splash', { "url": url,  "isReached": isReached} );
+                }
+              });
             }else{
               console.log("User does not exists..show login page")
               renderLoginPage(res, req.query.gw_address,req.query.gw_port, req.query.mac );
@@ -71,7 +72,6 @@ loginrequest.getLogin =  function( req, res ) {
     }
     var token = crypt.randomBytes( 64 ).toString('hex');
     
-    var moment = require( 'moment' );
     var now = moment();
     var email = req.body.email.toString();
     User.update( { "mac": req.body.mac }, { $set: { "updated_at": Date.now(), lastLoginTime: Math.floor( now.format( 'x' ) ) } }, function(err, nUpdated, rawResponse){

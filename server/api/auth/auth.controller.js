@@ -6,7 +6,7 @@ var Success = require('../../responses');
 var config = require('../../config/environment');
 var Client = require('../user/clients.model');
 var UserSession = require('../user/sessions.model');
-var SMS = require('../../config/services');
+var SERVICES = require('../../config/services');
 var wifidogauth = {};
 
 
@@ -60,28 +60,16 @@ wifidogauth.getAuth = function( req, res ) {
 
 
   function sendAuth(req, auth, res){
-    var start = new Date();
-            start.setHours(0,0,0,0);
-
-            var end = new Date();
-            end.setHours(23,59,59,999);
-            UserSession.find({ mac: req.query.mac,  started_at: {$gte: start, $lt: end}}, function( err, sessions){
-              if(err) console.log("Unable to load sessions");
-              console.log("Total totay sessions "+sessions.length);
-              var totalBytesUsed=0;
-              sessions.forEach(function(session){
-                totalBytesUsed= totalBytesUsed+ session.incoming + session.outgoing; 
-              });
-              console.log("Total data used today "+totalBytesUsed);
-              if(totalBytesUsed>= 100000000){
-                console.log("100 MB data limit reached");
-                auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED;
-                console.log('IP: ' + req.query.ip +"client validation failed");
-                SMS.sendSMSDataConsumed(user.phone,user.name);
-              }
-              console.log( 'IP: ' + req.query.ip + ', Auth: ' + auth );
-              res.send( 'Auth: ' + auth );
-            });
+      SERVICES.checkIfDataLimitReached(req.query.mac, function(isReached){
+        if(isReached){
+          console.log("100 MB data limit reached");
+          auth = config.AUTH_TYPES.AUTH_VALIDATION_FAILED;
+          console.log('IP: ' + req.query.ip +"client validation failed");
+          SERVICES.sendSMSDataConsumed(user.phone,user.name);
+        }
+        console.log( 'IP: ' + req.query.ip + ', Auth: ' + auth );
+        res.send( 'Auth: ' + auth );
+      });
   }
 
 

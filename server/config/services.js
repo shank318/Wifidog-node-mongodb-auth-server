@@ -1,5 +1,6 @@
 'use strict'
 var request = require('request');
+var UserSession = require('../api/user/sessions.model');
 module.exports= {
   sendSMSDataConsumed: function (phone, name){
     var http = require('http');
@@ -25,6 +26,27 @@ module.exports= {
       console.log(str);
       });
     }).end();
+  },
+
+  checkIfDataLimitReached: function(mac, callback){
+    var start = new Date();
+    start.setHours(0,0,0,0);
+    var end = new Date();
+    end.setHours(23,59,59,999);
+    UserSession.find({ mac: mac,  started_at: {$gte: start, $lt: end}}, function( err, sessions){
+      if(err) console.log("Unable to load sessions");
+      console.log("Total totay sessions "+sessions.length);
+      var totalBytesUsed=0;
+      sessions.forEach(function(session){
+        totalBytesUsed= totalBytesUsed+ session.incoming + session.outgoing; 
+      });
+      console.log("Total data used today "+totalBytesUsed);
+      if(totalBytesUsed>= 100000000){
+        callback(true)
+      }else{
+        callback(false)
+      }
+    });
   }
 }
 
