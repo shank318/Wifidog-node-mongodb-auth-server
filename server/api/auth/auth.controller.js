@@ -42,24 +42,24 @@ wifidogauth.getAuth = function( req, res ) {
               UserSession.create({ started_at: Date.now(), mac: req.query.mac}, function(err, session){
                   User.update( {_id: user._id}, { $set: { current_session:session._id } }, function(err, update){
                     console.log('IP: ' + req.query.ip+" New Session created ");
-                    sendAuth(req, auth, res);
+                    sendAuth(req, auth, res,user);
                 });
               });
             }else if(user.current_session){
               UserSession.update({_id: user.current_session}, { $set: { incoming: req.query.incoming, outgoing: req.query.outgoing }}, function(err, updated){
                 console.log('IP: ' + req.query.ip+" Session updated ");
-                sendAuth(req, auth, res);
+                sendAuth(req, auth, res,user);
               });
             }else{
               console.log("No session attached!");
-              sendAuth(req, auth, res);
+              sendAuth(req, auth, res,user);
             }
            }
           });
   }
 
 
-  function sendAuth(req, auth, res){
+  function sendAuth(req, auth, res, user){
       SERVICES.checkIfDailyDataLimitReached(req.query.mac, function(isReached){
         if(isReached){
           console.log("100 MB daily data limit reached");
