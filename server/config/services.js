@@ -7,7 +7,7 @@ module.exports= {
     var urlencode = require('urlencode');
     var message = "Hi "+name+", Your limit of 100MB daily data usage has been exhausted.";
     var msg=urlencode(message);
-    var number= phone;
+    var number= "91"+phone;
     var apiKey='nUxPqf/fkfM-TJJAGdXOpC4XfV1vAENq3UrTTfzmyj';
     var sender='txtlcl';
     var data='apiKey='+apiKey+'&sender='+sender+'&numbers='+number+'&message='+msg
