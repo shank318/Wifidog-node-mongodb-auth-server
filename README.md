@@ -11,4 +11,5 @@ The complete auth server is written in Node.js and MongoDb which follows all the
 Analytics UI to analyse data consumption. ( Currently all data consumed by a user is stored via mongodb in sessions which can be used to identify the total data consumed, day wise consumption, etc)
 
 #Usage
-Nonoerfer
+npm install
+node server/server.js
